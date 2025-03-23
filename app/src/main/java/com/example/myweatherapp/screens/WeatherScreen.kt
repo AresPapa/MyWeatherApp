@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.myweatherapp.components.DailyWeatherDisplay
 import com.example.myweatherapp.components.HourlyWeatherDisplay
+import com.example.myweatherapp.components.WeatherOverview
 import com.example.myweatherapp.viewmodel.WeatherViewModel
 
 @Composable
@@ -40,6 +41,7 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
             }
             currentWeather.value != null -> {
                 Text(text = "Temperature: ${currentWeather.value?.temperature}°C")
+                WeatherOverview( currentWeather = currentWeather.value!!, dailyWeather = dailyWeather.value!!)
                 hourlyWeather.value?.let {
                     HourlyWeatherDisplay(hourlyWeather = it)
                 }
