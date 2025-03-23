@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +35,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.getValue
@@ -71,10 +68,19 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf<Location?>(null)
                 }
 
-                val coroutineScope = rememberCoroutineScope()
-
                 val viewModel: WeatherViewModel by viewModels {
                     WeatherViewModelFactory(weatherRepository)
+                }
+
+                LaunchedEffect(Unit) {
+                    if (!locationPermissions.allPermissionsGranted || locationPermissions.shouldShowRationale) {
+                        locationPermissions.launchMultiplePermissionRequest()
+                    } else {
+                        location = locationManager.getLocation()
+                        location?.let {
+                            viewModel.fetchWeather(it.latitude, it.longitude)
+                        }
+                    }
                 }
 
 
@@ -95,19 +101,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    Button(
-                        onClick = {
-                            if (!locationPermissions.allPermissionsGranted || locationPermissions.shouldShowRationale) {
-                                locationPermissions.launchMultiplePermissionRequest()
-                            } else {
-                                coroutineScope.launch {
-                                    location = locationManager.getLocation()
-                                }
-                            }
-                        }
-                    ) {
-                        Text(text = "Get my location")
-                    }
                     WeatherScreen(viewModel=viewModel)
                 }
             }
@@ -148,29 +141,16 @@ class LocationManager(
 
         return suspendCancellableCoroutine { cont ->
 
-            fusedLocationProviderClient.lastLocation.apply {
-                if (isComplete) {
-                    if (isSuccessful) {
-                        cont.resume(result)
-                    } else {
-                        cont.resume(null)
-                    }
-                    return@suspendCancellableCoroutine
-                }
-
-                addOnSuccessListener {
-                    cont.resume(result)
-                }
-
-                addOnFailureListener {
+            fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
+                if (task.isSuccessful && task.result != null) {
+                    cont.resume(task.result)
+                } else {
                     cont.resume(null)
-                }
-
-                addOnCanceledListener {
-                    cont.cancel()
                 }
             }
         }
+
     }
+
 }
 
