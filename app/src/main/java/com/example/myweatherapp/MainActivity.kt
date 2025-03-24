@@ -77,9 +77,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
 val weatherRepository = WeatherRepository()
-
 
 class LocationManager(
     private val context: Context,

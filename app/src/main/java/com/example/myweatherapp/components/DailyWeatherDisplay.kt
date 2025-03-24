@@ -15,10 +15,11 @@ import androidx.compose.ui.unit.dp
 import com.example.myweatherapp.data.DailyWeather
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 @Composable
 fun DailyWeatherDisplay(dailyWeather: DailyWeather) {
-    val formatter = DateTimeFormatter.ofPattern("EEEE, MMM d")
+    val formatter = DateTimeFormatter.ofPattern("EEE")
 
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(dailyWeather.temperature_2m_max.size) { index ->
@@ -35,8 +36,8 @@ fun DailyWeatherDisplay(dailyWeather: DailyWeather) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(text = date, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-                    Text(text = "Max: ${dailyWeather.temperature_2m_max[index]}°C", style = MaterialTheme.typography.bodySmall)
-                    Text(text = "Min: ${dailyWeather.temperature_2m_min[index]}°C", style = MaterialTheme.typography.bodySmall)
+                    Text(text = "Max: ${dailyWeather.temperature_2m_max[index].roundToInt()}°C", style = MaterialTheme.typography.bodySmall)
+                    Text(text = "Min: ${dailyWeather.temperature_2m_min[index].roundToInt()}°C", style = MaterialTheme.typography.bodySmall)
                 }
             }
         }

@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.example.myweatherapp.data.HourlyWeather
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 @Composable
 fun HourlyWeatherDisplay(hourlyWeather: HourlyWeather) {
@@ -33,8 +34,8 @@ fun HourlyWeatherDisplay(hourlyWeather: HourlyWeather) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = time, style = MaterialTheme.typography.bodySmall)
-                Text(text = "${hourlyWeather.temperature_2m[startIndex + index]}°C", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Humidity: ${hourlyWeather.relative_humidity_2m[startIndex + index]}%", style = MaterialTheme.typography.bodySmall)
+                Text(text = "${hourlyWeather.temperature_2m[startIndex + index].roundToInt()}°C", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Humidity: ${hourlyWeather.relative_humidity_2m[startIndex + index].roundToInt()}%", style = MaterialTheme.typography.bodySmall)
             }
         }
     }
