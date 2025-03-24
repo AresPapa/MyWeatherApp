@@ -40,7 +40,6 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
                 Text(text = "Error: ${errorMessage.value}")
             }
             currentWeather.value != null -> {
-                Text(text = "Temperature: ${currentWeather.value?.temperature}°C")
                 WeatherOverview( currentWeather = currentWeather.value!!, dailyWeather = dailyWeather.value!!)
                 hourlyWeather.value?.let {
                     HourlyWeatherDisplay(hourlyWeather = it)
